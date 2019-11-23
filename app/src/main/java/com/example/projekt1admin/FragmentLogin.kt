@@ -1,18 +1,17 @@
 package com.example.projekt1admin
 
 import android.content.Context
-import android.content.Intent
-import android.graphics.drawable.ClipDrawable.HORIZONTAL
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.GridLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.fragment.app.FragmentTransaction
+import com.example.firebasetest.roomNumber
+import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.fragment_login.view.*
 
 /**
  * Created by VickY on 07-09-2017.
@@ -20,7 +19,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 class FragmentLogin : Fragment(){
 
     val TAG = "FragmentLogin"
-    private var currentVote: String? = null
+
+    private lateinit var database: DatabaseReference
+
 
     override fun onAttach(context: Context) {
         Log.d(TAG,"onAttach")
@@ -41,6 +42,44 @@ class FragmentLogin : Fragment(){
 
         val rootView = inflater.inflate(R.layout.fragment_login,container,false)
 
+        var exist = false
+
+        database = FirebaseDatabase.getInstance().reference
+
+        val databaseRef = FirebaseDatabase.getInstance()
+        val myRef = databaseRef.reference.child("Groups").orderByKey()
+
+        myRef.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+            override fun onDataChange(dataSnapshot: DataSnapshot){
+                for(ds in dataSnapshot.children){
+                    if(ds.child(rootView.edt_room_id.text.toString()).exists()){
+                        exist = true
+                    }
+                }
+            }
+        })
+
+
+        rootView.btn_login.setOnClickListener {
+
+            if (rootView.edt_name.text.isNotEmpty() && rootView.edt_room_id.text.isNotEmpty()) {
+                roomNumber = rootView.edt_room_id.text.toString()
+                if(!exist){
+                    //database.child("Groups").setValue(rootView.edt_room_id.text.toString())
+                }
+                var newFragment : Fragment = FragmentQuestions()
+                var transaction : FragmentTransaction = fragmentManager!!.beginTransaction()
+                transaction.replace(R.id.fragment_holder,newFragment)
+                transaction.addToBackStack(null)
+                transaction.commit()
+            } else {
+                Toast.makeText(this.context, "Please fill out the fields", Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
 
 
         return rootView

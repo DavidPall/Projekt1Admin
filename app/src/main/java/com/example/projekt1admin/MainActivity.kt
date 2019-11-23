@@ -35,9 +35,9 @@ class MainActivity : AppCompatActivity() {
         isFragmentOneLoaded = false
     }
 
-    fun ShowFragmentAnswers() {
+    fun ShowFragmentQuestions() {
         val transaction = manager.beginTransaction()
-        val fragment = FragmentAnswers()
+        val fragment = FragmentQuestions()
         transaction.replace(R.id.fragment_holder, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
