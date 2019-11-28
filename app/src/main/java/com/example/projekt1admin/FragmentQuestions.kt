@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_questions.view.*
+import kotlinx.android.synthetic.main.question_list.view.*
 
 /**
  * Created by VickY on 07-09-2017.
@@ -23,7 +25,6 @@ import kotlinx.android.synthetic.main.fragment_questions.view.*
 class FragmentQuestions : Fragment(){
 
     val TAG = "FragmentEdit"
-    private var currentVote: String? = null
 
     private var mRecyclerView: RecyclerView? = null
     private var mAdapter: RecyclerView.Adapter<*>? = null
@@ -45,12 +46,15 @@ class FragmentQuestions : Fragment(){
 
         val database = FirebaseDatabase.getInstance()
         val myRef = database.reference.child("Groups").child(roomNumber)
+
+
         myRef.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                questions.clear()
                 for (ds in dataSnapshot.children) {
                     val current = ds.getValue(Question::class.java)
                     val questionC = current?.question
@@ -60,6 +64,7 @@ class FragmentQuestions : Fragment(){
                     questions.add(Question(questionC,timeC,activeC))
                     mAdapter?.notifyDataSetChanged()
                 }
+
             }
         })
 

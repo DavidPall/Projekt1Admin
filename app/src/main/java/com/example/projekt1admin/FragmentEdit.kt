@@ -18,6 +18,8 @@ import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_edit.view.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
+import java.lang.Double.parseDouble
+import java.lang.NumberFormatException
 
 /**
  * Created by VickY on 07-09-2017.
@@ -25,7 +27,6 @@ import kotlinx.android.synthetic.main.fragment_login.view.*
 class FragmentEdit : Fragment(){
 
     val TAG = "FragmentEdit"
-    private var currentVote: String? = null
 
     private lateinit var database: DatabaseReference
 
@@ -48,9 +49,11 @@ class FragmentEdit : Fragment(){
         val rootView = inflater.inflate(R.layout.fragment_edit,container,false)
 
 
+
         database = FirebaseDatabase.getInstance().reference
 
         rootView.btn_add.setOnClickListener {
+
             if (rootView.edt_question.text.isNotEmpty() && rootView.edt_time.text.isNotEmpty()) {
                 database.child("Groups").child(roomNumber).child(rootView.edt_question.text.toString()).child("time").setValue(rootView.edt_time.text.toString())
                 database.child("Groups").child(roomNumber).child(rootView.edt_question.text.toString()).child("question").setValue(rootView.edt_question.text.toString())
@@ -62,8 +65,8 @@ class FragmentEdit : Fragment(){
                 transaction.addToBackStack(null)
                 transaction.commit()
             } else {
-                Toast.makeText(this.context, "Please fill out the fields", Toast.LENGTH_LONG)
-                    .show()
+                    Toast.makeText(this.context, "Please fill out the fields!", Toast.LENGTH_LONG)
+                        .show()
             }
         }
 
