@@ -1,4 +1,4 @@
-package com.example.projekt1admin
+package com.example.projekt1admin.View
 
 import android.content.Context
 import android.os.Bundle
@@ -9,16 +9,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import com.example.firebasetest.roomNumber
+import com.example.projekt1admin.Model.roomNumber
+import com.example.projekt1admin.R
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.fragment_login.view.*
+import kotlinx.android.synthetic.main.fragment_edit.view.*
 
 /**
  * Created by VickY on 07-09-2017.
  */
-class FragmentLogin : Fragment(){
+class FragmentEdit : Fragment(){
 
-    val TAG = "FragmentLogin"
+    val TAG = "FragmentEdit"
 
     private lateinit var database: DatabaseReference
 
@@ -31,56 +32,38 @@ class FragmentLogin : Fragment(){
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG,"onCreate")
         super.onCreate(savedInstanceState)
-
-
-
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d(TAG,"onCreateView")
 
-        val rootView = inflater.inflate(R.layout.fragment_login,container,false)
+        val rootView = inflater.inflate(R.layout.fragment_edit,container,false)
 
-        var exist = false
+
 
         database = FirebaseDatabase.getInstance().reference
 
-        val databaseRef = FirebaseDatabase.getInstance()
-        val myRef = databaseRef.reference.child("Groups").orderByKey()
+        //Adding a new question to the database with a standard "active: false" status, then navigating back to the question list
+        rootView.btn_add.setOnClickListener {
 
-        myRef.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
+            if (rootView.edt_question.text.isNotEmpty() && rootView.edt_time.text.isNotEmpty()) {
+                database.child("Groups").child(roomNumber).
+                    child(rootView.edt_question.text.toString()).child("time").setValue(rootView.edt_time.text.toString())
+                database.child("Groups").child(roomNumber).
+                    child(rootView.edt_question.text.toString()).child("question").setValue(rootView.edt_question.text.toString())
+                database.child("Groups").child(roomNumber).
+                    child(rootView.edt_question.text.toString()).child("active").setValue("false")
 
-            }
-            override fun onDataChange(dataSnapshot: DataSnapshot){
-                for(ds in dataSnapshot.children){
-                    if(ds.child(rootView.edt_room_id.text.toString()).exists()){
-                        exist = true
-                    }
-                }
-            }
-        })
-
-
-        rootView.btn_login.setOnClickListener {
-
-            if (rootView.edt_name.text.isNotEmpty() && rootView.edt_room_id.text.isNotEmpty()) {
-                roomNumber = rootView.edt_room_id.text.toString()
-                if(!exist){
-                    //database.child("Groups").setValue(rootView.edt_room_id.text.toString())
-                }
                 var newFragment : Fragment = FragmentQuestions()
                 var transaction : FragmentTransaction = fragmentManager!!.beginTransaction()
                 transaction.replace(R.id.fragment_holder,newFragment)
                 transaction.addToBackStack(null)
                 transaction.commit()
             } else {
-                Toast.makeText(this.context, "Please fill out the fields", Toast.LENGTH_LONG)
-                    .show()
+                    Toast.makeText(this.context, "Please fill out the fields!", Toast.LENGTH_LONG)
+                        .show()
             }
         }
-
 
         return rootView
     }

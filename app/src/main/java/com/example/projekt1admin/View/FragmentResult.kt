@@ -1,4 +1,4 @@
-package com.example.projekt1admin
+package com.example.projekt1admin.View
 
 import android.content.Context
 import android.os.Bundle
@@ -7,14 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.firebasetest.roomNumber
+import com.example.projekt1admin.Model.User
+import com.example.projekt1admin.Model.roomNumber
+import com.example.projekt1admin.Presenter.ResultAdapter
+import com.example.projekt1admin.R
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.fragment_login.view.*
 
 /**
  * Created by VickY on 07-09-2017.
@@ -45,6 +45,7 @@ class FragmentResult : Fragment(){
 
         val rootView = inflater.inflate(R.layout.fragment_result,container,false)
 
+        //Getting the information from the bundle
         val args = arguments
         val questionName = args?.getString("Question Name","Something went wrong my friend")
 
@@ -63,7 +64,7 @@ class FragmentResult : Fragment(){
             override fun onCancelled(p0: DatabaseError) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
-
+            //Updateing the timer on the screen
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 var remainingTime = dataSnapshot.child("time").value
                 txtTimer.setText("Time remaining: " + remainingTime)
@@ -81,6 +82,7 @@ class FragmentResult : Fragment(){
         return rootView
     }
 
+    // Function for loading the users and their votes into an ArrayList from the database from the selected question
     fun loadwithdata() : ArrayList<User>{
         val users : ArrayList<User> = ArrayList()
 
@@ -99,7 +101,7 @@ class FragmentResult : Fragment(){
                     val current = ds.getValue(User::class.java)
                     val nameC = current?.userID
                     val voteC  = current?.Vote
-                    users.add(User(nameC,voteC))
+                    users.add(User(nameC, voteC))
                     mAdapter?.notifyDataSetChanged()
                 }
 

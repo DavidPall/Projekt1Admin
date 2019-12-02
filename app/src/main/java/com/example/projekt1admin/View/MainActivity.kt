@@ -1,7 +1,8 @@
-package com.example.projekt1admin
+package com.example.projekt1admin.View
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.projekt1admin.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,9 +15,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         ShowFragmentLogin()
-
     }
 
+    //Loading the Login fragment on the fragment holder in the Main Activity
     fun ShowFragmentLogin() {
         val transaction = manager.beginTransaction()
         val fragment = FragmentLogin()
@@ -24,23 +25,5 @@ class MainActivity : AppCompatActivity() {
         transaction.addToBackStack(null)
         transaction.commit()
         isFragmentOneLoaded = true
-    }
-
-    fun ShowFragmentEdit() {
-        val transaction = manager.beginTransaction()
-        val fragment = FragmentEdit()
-        transaction.replace(R.id.fragment_holder, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
-        isFragmentOneLoaded = false
-    }
-
-    fun ShowFragmentQuestions() {
-        val transaction = manager.beginTransaction()
-        val fragment = FragmentQuestions()
-        transaction.replace(R.id.fragment_holder, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
-        isFragmentOneLoaded = false
     }
 }

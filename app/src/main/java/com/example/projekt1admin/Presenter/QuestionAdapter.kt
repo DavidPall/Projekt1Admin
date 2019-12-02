@@ -1,6 +1,5 @@
-package com.example.projekt1admin
+package com.example.projekt1admin.Presenter
 
-import android.content.IntentSender
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -10,15 +9,14 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
-import com.example.firebasetest.roomNumber
+import com.example.projekt1admin.View.FragmentResult
+import com.example.projekt1admin.Model.Question
+import com.example.projekt1admin.Model.roomNumber
+import com.example.projekt1admin.R
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import java.util.concurrent.TimeUnit
-import kotlinx.android.synthetic.main.question_list.view.*
 
 class QuestionAdapter(var questionList:ArrayList<Question>) : RecyclerView.Adapter<QuestionAdapter.ViewHolder>() {
 
@@ -27,8 +25,6 @@ class QuestionAdapter(var questionList:ArrayList<Question>) : RecyclerView.Adapt
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.question_list, parent, false)
-
-
 
         return ViewHolder(v)
     }
@@ -40,13 +36,12 @@ class QuestionAdapter(var questionList:ArrayList<Question>) : RecyclerView.Adapt
 
         holder.question.text = currentQuestion.question
 
-
-
-
+        ///Activating the question if it isn't inactive yet and going to its result and start the question's timer
         holder.btn_act.setOnClickListener {
             if(currentQuestion.active != "inactive") {
                 startTimer(currentQuestion)
 
+                //sending the roomNumber and currentQuestion to the next fragment
                 val bundle = Bundle()
                 bundle.putString("Question Name", currentQuestion.question)
                 bundle.putString("Group number", roomNumber)//parameters are (key, value).
@@ -61,6 +56,7 @@ class QuestionAdapter(var questionList:ArrayList<Question>) : RecyclerView.Adapt
 
         }
 
+        //simply going to the result screen for the right question
         holder.btn_res.setOnClickListener {
             val bundle = Bundle()
             bundle.putString("Question Name", currentQuestion.question)
@@ -75,6 +71,7 @@ class QuestionAdapter(var questionList:ArrayList<Question>) : RecyclerView.Adapt
 
     }
 
+    //Modifying the question's activity to true and updating the remaining time in the firebase
     private fun updateRunningQuestion(question: Question){
         val database = FirebaseDatabase.getInstance()
         val myRef = database.reference.child("Groups").child(roomNumber).child(question.question.toString())
@@ -83,6 +80,7 @@ class QuestionAdapter(var questionList:ArrayList<Question>) : RecyclerView.Adapt
         myRef.ref.child("time").setValue(question.time)
     }
 
+    //When the timer is ended setting the activity to inactive so you can't activate it again and modifying the remaining time to 0
     private fun updateEndingQuestion(question: Question){
         val database = FirebaseDatabase.getInstance()
         val myRef = database.reference.child("Groups").child(roomNumber).child(question.question.toString())
@@ -92,7 +90,7 @@ class QuestionAdapter(var questionList:ArrayList<Question>) : RecyclerView.Adapt
     }
 
 
-
+    //Initializing the timer
     private fun startTimer(question: Question){
         object : CountDownTimer(1000 * (question.time)!!.toLong(), 1000) {
 
